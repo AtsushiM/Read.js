@@ -15,3 +15,6 @@ var TestClass = read('hogehoge.TestClass');
 read('hogehoge.TestClass', 'path/to/file');
 
 ```
+
+## More
+結合用のファイルを提供するツールを作成中です。
