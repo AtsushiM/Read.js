@@ -1,7 +1,8 @@
 # Read.js
 jsファイルを同期的に読み込むミニマムなライブラリです。<br />
-最終的に結合されることが前提のjs開発において威力を発揮します。
-
+最終的に結合されることが前提のjs開発において威力を発揮します。<br />
+また、gruntを使用して、Read.jsを使用したプロジェクトのjsファイルを結合することもできます。<br />
+[https://github.com/AtsushiM/unite-read-js](https://github.com/AtsushiM/unite-read-js)<br />
 
 ## Usage
 ```javascript
@@ -64,7 +65,3 @@ var order = read.orderLog();
  */
 
 ```
-
-## More
-gruntを使用してread.jsの動作を保ったまま、ファイルを一つに圧縮することができます。<br />
-[grunt: unite-read-js](https://github.com/AtsushiM/Read.js/tree/master/grunt-task)
