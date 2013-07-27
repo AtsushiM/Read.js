@@ -12,7 +12,7 @@ var TestClass = read('hogehoge.TestClass');
 read('hogehoge.TestClass', 'path/to/file');
 
 
-/////////////////////////////////////////////
+///////////////////////////////////////////////////////
 
 // 同期読み込みのため、以下の様にネストせずに記述可能
 var Action = read('fugafuga.Action', 'path/to/file'),
@@ -20,8 +20,31 @@ var Action = read('fugafuga.Action', 'path/to/file'),
 
 action.method();
 
+///////////////////////////////////////////////////////
+
+/**
+  読み込んだjsファイルのパスを配列で返しconsoleに出力
+ **/
+// 連続して読み込み
+read('hogehoge.TestClass1', 'path/to/file1');
+read('hogehoge.TestClass2', 'path/to/file2');
+read('hogehoge.TestClass3', 'path/to/file3');
+
+// 読み込み済みのため無視
+read('hogehoge.TestClass1', 'path/to/file1');
+
+var order = read.orderLog();
+
+/*
+    console:
+    hogehoge.TestClass1.js hogehoge.TestClass2.js hogehoge.TestClass3.js
+ */
+/*
+    order == [
+        'hogehoge.TestClass1.js',
+        'hogehoge.TestClass2.js',
+        'hogehoge.TestClass3.js'
+    ]
+ */
 
 ```
-
-## More
-結合用のファイルを提供するツールを作成中です。
