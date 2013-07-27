@@ -37,13 +37,13 @@ var order = read.orderLog();
 
 /*
     console:
-    hogehoge.TestClass1.js hogehoge.TestClass2.js hogehoge.TestClass3.js
+    path/to/file1.js path/to/file2.js path/to/file3.js
  */
 /*
     order == [
-        'hogehoge.TestClass1.js',
-        'hogehoge.TestClass2.js',
-        'hogehoge.TestClass3.js'
+        'path/to/file1.js',
+        'path/to/file2.js',
+        'path/to/file3.js'
     ]
  */
 
