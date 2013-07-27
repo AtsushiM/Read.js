@@ -4,7 +4,7 @@ jsファイルを同期的に読み込むミニマムなライブラリです。
 また、gruntを使用して、Read.jsを使用したプロジェクトのjsファイルを結合することもできます。<br />
 
 
-[![Build Status](https://travis-ci.org/AtsushiM/Read.js.png?branch=master)](https://travis-ci.org/AtsushiM/Read.js)
+[![Build Status](https://travis-ci.org/AtsushiM/Read.js.png?branch=master)](https://travis-ci.org/AtsushiM/Read.js)<br />
 [https://github.com/AtsushiM/unite-read-js](https://github.com/AtsushiM/unite-read-js)<br />
 
 ## Usage
