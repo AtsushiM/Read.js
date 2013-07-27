@@ -67,4 +67,4 @@ var order = read.orderLog();
 
 ## More
 gruntを使用してread.jsの動作を保ったまま、ファイルを一つに圧縮することができます。<br />
-[grunt: unite-read-js](https://github.com/AtsushiM/Read.js/grunt-task)
+[grunt: unite-read-js](https://github.com/AtsushiM/Read.js/tree/master/grunt-task)
