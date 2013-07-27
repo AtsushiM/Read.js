@@ -21,10 +21,30 @@ var Action = read('fugafuga.Action', 'path/to/file'),
 action.method();
 
 ///////////////////////////////////////////////////////
+```
 
-/**
-  読み込んだjsファイルのパスを配列で返しconsoleに出力
- **/
+### read.ns(keyword, swap)
+名前空間をkeywordを元に作成します。<br />
+swapが指定された場合、作成される名前空間に使用されます。<br />
+keywordに指定した場所になんらか値が存在していた場合、swapと置き換えられ、<br />
+元の値が持っていたプロパティをswapに追加します。<br />
+swapと元の値が同じプロパティを持っていた場合、swapのプロパティが優先されます。
+
+```javascript
+// widnow.namespace.storeにオブジェクトを作成
+read.ns('namespace.store');
+
+// widnow.namespace.Testに関数を設定
+read.ns('namespace.Test', function() {
+    // write code.
+});
+
+```
+
+### read.orderLog()
+jsファイルのパスを読み込んだ順の配列で返すメソッドです。
+
+```javascript
 // 連続して読み込み
 read('hogehoge.TestClass1', 'path/to/file1');
 read('hogehoge.TestClass2', 'path/to/file2');
@@ -35,10 +55,6 @@ read('hogehoge.TestClass1', 'path/to/file1');
 
 var order = read.orderLog();
 
-/*
-    console:
-    path/to/file1.js path/to/file2.js path/to/file3.js
- */
 /*
     order == [
         'path/to/file1.js',

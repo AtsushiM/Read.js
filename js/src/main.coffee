@@ -7,10 +7,6 @@ do () ->
     errorNotFound = (required) ->
         throw Error 'not found ' + required
 
-    dispLog = () ->
-        if window.console
-            console.log.apply console, arguments
-
     presenceCheck = (required) ->
         temp = win
 
@@ -39,7 +35,6 @@ do () ->
                             doc.head.appendChild(script = doc.createElement 'script')
                             script.text = '// src: ' + srcpath + '.js\n' + xhr.responseText
 
-                            dispLog srcpath, script
                             sequence.push srcpath
                         else
                             throw Error 'file load error: ' + required
@@ -57,13 +52,43 @@ do () ->
 
         return cls
 
+    read['ns'] = (keywords, swap) ->
+        keywords = keywords.split('.')
+        i = 0
+        len = keywords.length
+        temp = win
+
+        while i < len
+            if !temp[keywords[i]]
+                break
+
+            par = temp
+            temp = temp[keywords[i]]
+
+            i++
+
+        while i < len
+            par = temp
+            temp = temp[keywords[i]] = {}
+
+            i++
+
+        if swap
+            for i, val of temp
+                if swap[i] == undefined
+                    swap[i] = val
+
+            par[keywords[(len - 1)]] = swap
+
+            temp = swap
+
+        return temp
+
     read['orderLog'] = () ->
         log = ''
 
         for val in sequence
             log += val + ' '
-
-        dispLog log
 
         return sequence
 
