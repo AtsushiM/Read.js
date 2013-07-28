@@ -7,6 +7,7 @@ do (
         throw Error 'not found ' + required
     )
 ) ->
+
     presenceCheck = (required) ->
         required = required.split('.')
         temp = win
