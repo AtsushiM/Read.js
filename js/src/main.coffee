@@ -116,6 +116,7 @@ do (
             return
 
         checkReadLoop path
+        required_obj[path] = true
         require_ary.push path
 
         loadLoop = () ->

@@ -68,5 +68,8 @@ describe('readは', function() {
                 done();
             });
         }
+        else {
+            done();
+        }
     });
 });
