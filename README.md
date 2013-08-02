@@ -9,6 +9,12 @@ jsファイルを同期的に読み込むミニマムなライブラリです。
 [![Build Status](https://travis-ci.org/AtsushiM/Read.js.png?branch=master)](https://travis-ci.org/AtsushiM/Read.js)<br />
 
 ## Usage
+
+### read(keyword, [path])
+keywordに値が存在する場合はその値を返します。<br />
+keywordに値が存在せず、かつpathが指定された場合、pathのjsファイルを同期的に読み込み、<br />
+再度keywordでチェックを行います。
+
 ```javascript
 // 対象がwindow以下に存在するかチェック
 var TestClass = read('hogehoge.TestClass');
@@ -46,26 +52,14 @@ read.ns('namespace.Test', function() {
 
 ```
 
-### read.orderLog()
-jsファイルのパスを読み込んだ順の配列で返すメソッドです。
+### read.run(path, [callback])
+pathから使用するjsファイルを解析し、ファイルの読み込みを行います。<br />
+このメソッドを使った場合、script要素のsrc属性を使用してファイル読み込みを行うため、<br />
+使わなかった場合に比べてデバッグしやすいというメリットがあります。
 
-```javascript
-// 連続して読み込み
-read('hogehoge.TestClass1', 'path/to/file1');
-read('hogehoge.TestClass2', 'path/to/file2');
-read('hogehoge.TestClass3', 'path/to/file3');
-
-// 読み込み済みのため無視
-read('hogehoge.TestClass1', 'path/to/file1');
-
-var order = read.orderLog();
-
-/*
-    order == [
-        'path/to/file1.js',
-        'path/to/file2.js',
-        'path/to/file3.js'
-    ]
- */
-
+```html
+// js/main.jsからread(keyword, path)を検索しファイル読み込みを行う
+<script type="text/javascript">
+    read.run('js/main'); // .jsは省略する
+</script>
 ```

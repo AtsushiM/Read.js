@@ -1,10 +1,12 @@
 do (
-    win = this,
+    win = window,
     doc = document,
     required_obj = {},
-    sequence = [],
+    reg_readmethod = /(\n|=|,|;|:|\(|&|\|)\s*read\(.+?,\s*['"](.+?)['"]\)/
     errorNotFound = ((required) ->
         throw Error 'not found ' + required
+
+        return
     )
 ) ->
 
@@ -15,38 +17,48 @@ do (
         for i of required
             temp = temp[required[i]]
 
-            if !temp
-                break
+            break unless temp
 
         return temp
+
+    xhrGet = (srcpath) ->
+        res = ''
+        xhr = new XMLHttpRequest
+
+        xhr.onreadystatechange = ->
+            if xhr.readyState == 4
+                if xhr.status == 200
+                    res = xhr.responseText
+                else
+                    errorNotFound srcpath
+
+            return
+
+        xhr.open 'GET', srcpath + '?t=' + new Date*1, false
+
+        xhr.send()
+
+        return '\n' + res.replace /\r\n?/g, '\n'
+
+    xhrSyncScriptLoad = (srcpath) ->
+        res = xhrGet srcpath
+
+        doc.head
+            .appendChild(doc.createElement 'script')
+            .text = '//src:' + srcpath + res
+
+        return
 
     (read = win['read'] = (required, srcpath) ->
         cls = presenceCheck required
 
-        if !cls
+        unless cls
             if srcpath && !required_obj[srcpath]
                 required_obj[srcpath] = true
 
                 srcpath += '.js'
 
-                xhr = new XMLHttpRequest
-
-                xhr.onreadystatechange = ->
-                    if xhr.readyState == 4
-                        if xhr.status == 200
-                            doc.head
-                                .appendChild(doc.createElement 'script')
-                                .text = '//src:' + srcpath + '\n' + xhr.responseText
-
-                            sequence.push srcpath
-                        else
-                            errorNotFound srcpath
-
-                    return
-
-                xhr.open 'GET', srcpath + '?t=' + new Date*1, false
-
-                xhr.send()
+                xhrSyncScriptLoad srcpath
             else
                 errorNotFound required
 
@@ -61,8 +73,7 @@ do (
         temp = win
 
         while i < len
-            if !temp[keywords[i]]
-                break
+            break if !temp[keywords[i]]
 
             par = temp
             temp = temp[keywords[i]]
@@ -84,7 +95,49 @@ do (
 
         return temp
 
-    read['orderLog'] = () ->
-        return sequence
+    read['run'] = (path, callback) ->
+        path = path + '.js'
+        require_ary = []
+
+        checkReadLoop = (jspath) ->
+            filevalue = xhrGet jspath
+
+            while result = filevalue.match reg_readmethod
+                temp = result[2] + '.js'
+
+                unless required_obj[temp]
+                    required_obj[temp] = true
+                    checkReadLoop temp
+
+                    require_ary.push temp
+
+                filevalue = filevalue.slice result.index + result[0].length
+
+            return
+
+        checkReadLoop path
+        require_ary.push path
+
+        loadLoop = () ->
+            if src = require_ary.shift()
+                script = doc.createElement 'script'
+                loadaction = () ->
+                    script.removeEventListener 'load', loadaction
+                    loadLoop()
+
+                script.addEventListener 'load', loadaction
+
+                script.src = src
+
+                doc.head.appendChild script
+
+            else
+                callback() if callback
+
+            return
+
+        loadLoop()
+
+        return
 
     return

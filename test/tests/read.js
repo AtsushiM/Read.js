@@ -26,19 +26,6 @@ describe('readは', function() {
         }
     });
 
-    it('read.orderLog()でreadメソッドで読込された順番にファイル名をconsole.logに表示し、配列を返す', function() {
-        var order = read.orderLog();
-
-        expect(order).to.be.a('array');
-
-        if (!window.mochaPhantomJS) {
-            expect(order).to.be.eql([
-                'common/TestClass.js',
-                'common/TestClass2.js'
-            ]);
-        }
-    });
-
     it('read.ns(keyword)でwindow以下にkeywordで指定された名前空間を作成する', function() {
         var ret = read.ns('read.testspace');
         expect(ret).to.be.a('object');
@@ -68,5 +55,18 @@ describe('readは', function() {
         expect(read.testspace.test3).to.eql(3);
 
         delete read.testspace;
+    });
+
+    it('read.run(path)で指定したpathのjsからクラスの階層を解析し実行する', function(done) {
+        if (!window.mochaPhantomJS) {
+            read.run('common/Read1', function() {
+                expect(read.Read1).to.be.a('function');
+                expect(read.Read2).to.be.a('function');
+                expect(read.Read3).to.be.a('function');
+                expect(read.Read4).to.be.a('function');
+
+                done();
+            });
+        }
     });
 });
