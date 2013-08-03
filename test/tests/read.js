@@ -57,16 +57,32 @@ describe('readは', function() {
         delete read.testspace;
     });
 
+    it('read.ns(keyword)で指定した場所に予め値が存在していた場合、上書きされない', function() {
+        read.ns('read.testspace', function() {});
+        read.ns('read.testspace');
+
+        expect(read.testspace).to.be.a('function');
+
+        read.ns('read.testspace', function() {});
+        read.ns('read.testspace', {});
+
+        expect(read.testspace).to.be.a('object');
+
+        delete read.testspace;
+    });
+
     it('read.run(path)で指定したpathのjsからクラスの階層を解析し実行する', function(done) {
         if (!window.mochaPhantomJS) {
-            read.run('common/Read1', function() {
+            read.run('common/Read1');
+
+            setTimeout(function() {
                 expect(read.Read1).to.be.a('function');
                 expect(read.Read2).to.be.a('function');
                 expect(read.Read3).to.be.a('function');
                 expect(read.Read4).to.be.a('function');
 
                 done();
-            });
+            }, 500);
         }
         else {
             done();

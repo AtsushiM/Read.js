@@ -95,7 +95,7 @@ do (
 
         return temp
 
-    read['run'] = (path, callback) ->
+    read['run'] = (path) ->
         path = path + '.js'
         require_ary = []
 
@@ -131,9 +131,6 @@ do (
                 script.src = src
 
                 doc.head.appendChild script
-
-            else
-                callback() if callback
 
             return
 

@@ -34,7 +34,7 @@ action.method();
 ///////////////////////////////////////////////////////
 ```
 
-### read.ns(keyword, swap)
+### read.ns(keyword, [swap])
 名前空間をkeywordを元に作成します。<br />
 swapが指定された場合、作成される名前空間に使用されます。<br />
 keywordに指定した場所になんらか値が存在していた場合、swapと置き換えられ、<br />
@@ -52,7 +52,7 @@ read.ns('namespace.Test', function() {
 
 ```
 
-### read.run(path, [callback])
+### read.run(path)
 pathから使用するjsファイルを解析し、ファイルの読み込みを行います。<br />
 このメソッドを使った場合、script要素のsrc属性を使用してファイル読み込みを行うため、<br />
 使わなかった場合に比べてデバッグしやすいというメリットがあります。

@@ -80,7 +80,7 @@
     }
     return temp;
   };
-  read['run'] = function(path, callback) {
+  read['run'] = function(path) {
     var checkReadLoop, loadLoop, require_ary;
     path = path + '.js';
     require_ary = [];
@@ -111,10 +111,6 @@
         script.addEventListener('load', loadaction);
         script.src = src;
         doc.head.appendChild(script);
-      } else {
-        if (callback) {
-          callback();
-        }
       }
     };
     loadLoop();
