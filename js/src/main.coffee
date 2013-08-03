@@ -9,7 +9,6 @@ do (
         return
     )
 ) ->
-
     presenceCheck = (required) ->
         required = required.split('.')
         temp = win
@@ -125,6 +124,8 @@ do (
                 loadaction = () ->
                     script.removeEventListener 'load', loadaction
                     loadLoop()
+
+                    return
 
                 script.addEventListener 'load', loadaction
 
