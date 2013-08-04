@@ -1,4 +1,3 @@
-// Test1
 var Test2 = read('ns.Test2', 'js/_src/Test2');
 read('ns.Test3', 'js/_src/Test3');
 

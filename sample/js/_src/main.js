@@ -1,4 +1,3 @@
-// main
 read.ns('ns');
 
 var Test1 = read('ns.Test1', 'js/_src/Test1');

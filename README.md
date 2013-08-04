@@ -1,7 +1,7 @@
 # Read.js
 jsファイルを同期的に読み込むミニマムなライブラリです。<br />
 最終的に結合されることが前提のjs開発において威力を発揮します。<br />
-また、gruntを使用して、Read.jsを使用したプロジェクトのjsファイルを結合することもできます。<br />
+また、compiler/unite.rbやgruntタスクを使用して、Read.jsを使用したプロジェクトのjsファイルを結合することもできます。<br />
 
 [https://github.com/AtsushiM/unite-read-js](https://github.com/AtsushiM/unite-read-js)<br />
 
@@ -13,7 +13,8 @@ jsファイルを同期的に読み込むミニマムなライブラリです。
 ### read(keyword, [path])
 keywordに値が存在する場合はその値を返します。<br />
 keywordに値が存在せず、かつpathが指定された場合、pathのjsファイルを同期的に読み込み、<br />
-再度keywordでチェックを行います。
+再度keywordでチェックを行います。<br />
+pathは必ずStringリテラルで指定してください。
 
 ```javascript
 // 対象がwindow以下に存在するかチェック
@@ -63,3 +64,13 @@ pathから使用するjsファイルを解析し、ファイルの読み込み�
     read.run('js/main'); // .jsは省略する
 </script>
 ```
+
+## Compile
+compiler/unite.rbを使用してjsファイルを結合することが可能です。
+
+```command
+ruby unite.rb -root=path/to/dir -main=path/to/dir/file.js -output=path/to/file.js -remove_read_path=1
+```
+
+-outputと-remove_read_pathは省略可能です。<br />
+-remove_read_pathを指定した場合、read(keyword, path)をread(keyword)に置換します。
