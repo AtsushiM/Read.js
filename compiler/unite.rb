@@ -39,10 +39,10 @@ def depthLoop (path)
 
         depthLoop jspath
 
-        $depths << jspath unless $depths.index jspath
-
         value = value[index+$&.length..value.length]
     end
+
+    $depths << path unless $depths.index path
 end
 
 def uniteJSFiles (array)
@@ -69,6 +69,5 @@ def uniteJSFiles (array)
 end
 
 depthLoop $main
-$depths << $main
 
 uniteJSFiles $depths

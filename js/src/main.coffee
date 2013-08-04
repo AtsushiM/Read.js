@@ -105,18 +105,16 @@ do (
                 temp = result[2] + '.js'
 
                 unless required_obj[temp]
-                    required_obj[temp] = true
                     checkReadLoop temp
 
-                    require_ary.push temp
-
                 filevalue = filevalue.slice result.index + result[0].length
+
+            require_ary.push jspath
+            required_obj[jspath] = true
 
             return
 
         checkReadLoop path
-        required_obj[path] = true
-        require_ary.push path
 
         loadLoop = () ->
             if src = require_ary.shift()
