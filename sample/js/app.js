@@ -7,8 +7,8 @@ read.ns('ns.Test3', function() {
     document.write('exe: test3.<br/ >');
 });
 
-var Test2 = read('ns.Test2');
-read('ns.Test3');
+var Test2 = read('ns.Test2', 'js/_src/Test2');
+read('ns.Test3', 'js/_src/Test3');
 
 
 read.ns('ns.Test1', function() {
@@ -20,7 +20,7 @@ read.ns('ns.Test1', function() {
 
 read.ns('ns');
 
-var Test1 = read('ns.Test1');
-var test2 = read('ns.Test2');
+var Test1 = read('ns.Test1', 'js/_src/Test1');
+var test2 = read('ns.Test2', 'js/_src/Test2');
 
 new Test1();

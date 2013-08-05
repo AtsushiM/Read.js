@@ -1,29 +1,31 @@
-initvalue = {}
+require 'optparse'
+opt = OptionParser.new
 
-ARGV.each do |argstr|
-    arg = argstr.split '='
-    initvalue[arg[0]] = arg[1]
-end
+OPTS = {}
 
-$root = initvalue['-root']
-$main = initvalue['-main']
+opt.on('-r VAL', '--root=VAL') {|v| OPTS[:root] = v }
+opt.on('-m VAL','--main=VAL') {|v| OPTS[:main] = v }
+opt.on('-o VAL','--output=VAL') {|v| OPTS[:output] = v }
+opt.on('-p VAL','--remove_read_path=VAL') {|v| OPTS[:remove_read_path] = v }
+
+opt.parse!(ARGV)
+
+@root = OPTS[:root]
+@main = OPTS[:main]
 
 def raiseNoOption (name)
     raise 'input ' + name + ' option.  sample: ruby unite.rb -root=path/to/dir -main=path/to/dir/file.js'
 end
-unless $root
-    raiseNoOption '-root'
-end
-unless $main
-    raiseNoOption '-main'
-end
 
-$output = initvalue['-output']
-$remove_read_path = initvalue['-remove_read_path']
-$depths = []
-$reg = /(\n|=|,|;|:|\(|&|\|)([ \t]*)read\((.+?),\s*['"](.+?)['"]\)/
+raiseNoOption '-root' unless @root
+raiseNoOption '-main' unless @main
 
-$root += '/' unless $root[$root.length - 1] == '/'
+@output = OPTS[:output]
+@remove_read_path = OPTS[:remove_read_path]
+@depths = []
+@reg = /(\n|=|,|;|:|\(|&|\|)([ \t]*)read\((.+?),\s*['"](.+?)['"]\)/
+
+@root += '/' unless @root[-1] == '/'
 
 def depthLoop (path)
     f = open(path)
@@ -32,15 +34,17 @@ def depthLoop (path)
 
     f.close
 
-    while index = $reg =~ (value)
-        jspath = $root + $4 + '.js'
+    while index = @reg =~ (value)
+        jspath = @root + $4 + '.js'
 
         depthLoop jspath
 
         value = value[index+$&.length..value.length]
     end
 
-    $depths << path unless $depths.index path
+    @depths << path unless @depths.index path
+
+    @depths
 end
 
 def uniteJSFiles (array)
@@ -54,18 +58,18 @@ def uniteJSFiles (array)
         f.close
     end
 
-    if $remove_read_path
-        value = value.gsub($reg, '\1\2read(\3)')
+    if @remove_read_path == '1'
+        value = value.gsub(@reg, '\1\2read(\3)')
     end
 
-    unless $output
+    unless @output
         printf value
     else
-        output_file = File.open($output, 'w')
+        output_file = File.open(@output, 'w')
         output_file.write value
     end
+
+    value
 end
 
-depthLoop $main
-
-uniteJSFiles $depths
+uniteJSFiles depthLoop @main
