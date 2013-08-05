@@ -1,9 +1,9 @@
 initvalue = {}
 
-ARGV.each { |argstr|
+ARGV.each do |argstr|
     arg = argstr.split '='
     initvalue[arg[0]] = arg[1]
-}
+end
 
 $root = initvalue['-root']
 $main = initvalue['-main']
@@ -21,6 +21,7 @@ end
 $output = initvalue['-output']
 $remove_read_path = initvalue['-remove_read_path']
 $depths = []
+$reg = /(\n|=|,|;|:|\(|&|\|)([ \t]*)read\((.+?),\s*['"](.+?)['"]\)/
 
 $root += '/' unless $root[$root.length - 1] == '/'
 
@@ -31,11 +32,8 @@ def depthLoop (path)
 
     f.close
 
-    reg = '(\n|=|,|;|:|\(|&|\|)\s*read\(.+?,\s*[\'"](.+?)[\'"]\)'
-
-    while index = /#{reg}/ =~ (value)
-        # p $2
-        jspath = $root + $2 + '.js'
+    while index = $reg =~ (value)
+        jspath = $root + $4 + '.js'
 
         depthLoop jspath
 
@@ -48,16 +46,16 @@ end
 def uniteJSFiles (array)
     value = ''
 
-    array.each { |jspath|
+    array.each do |jspath|
         f = open(jspath)
 
         value += "\n" + f.read
 
         f.close
-    }
+    end
 
     if $remove_read_path
-        value = value.gsub(/(\n|=|,|;|:|\(|&|\|)([ \t]*)read\((.+?),\s*['"].+?['"]\)/, '\1\2read(\3)')
+        value = value.gsub($reg, '\1\2read(\3)')
     end
 
     unless $output
