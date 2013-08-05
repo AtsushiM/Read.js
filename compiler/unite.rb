@@ -27,7 +27,7 @@ raiseNoOption '-main' unless @main
 
 @root += '/' unless @root[-1] == '/'
 
-def depthLoop (path)
+def depthRecursive (path)
     f = open(path)
 
     value = "\n" + f.read
@@ -37,7 +37,7 @@ def depthLoop (path)
     while index = @reg =~ (value)
         jspath = @root + $4 + '.js'
 
-        depthLoop jspath
+        depthRecursive jspath
 
         value = value[index+$&.length..value.length]
     end
@@ -72,4 +72,4 @@ def uniteJSFiles (array)
     value
 end
 
-uniteJSFiles depthLoop @main
+uniteJSFiles depthRecursive @main
