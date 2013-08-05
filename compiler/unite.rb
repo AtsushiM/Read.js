@@ -21,7 +21,8 @@ def readCapture(path, attr)
     attr[:readed_path] << path
     File.open(path, 'r').each_line do |line|
         if line =~ re
-            stack += readCapture("#{attr[:root]}/#{$3}.js", attr) unless attr[:readed_path].index "#{attr[:root]}/#{$3}.js"
+            nextpath = "#{attr[:root]}/#{$3}.js"
+            stack += readCapture(nextpath, attr) unless attr[:readed_path].index nextpath
         end
         buffer += attr[:remove_read_path] ? line.gsub(re, '\1read(\2)') : line
     end
