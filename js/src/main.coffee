@@ -2,7 +2,7 @@ do (
     win = window,
     doc = document,
     required_obj = {},
-    reg_readmethod = /(\n|=|,|;|:|\(|&|\|)\s*read\(.+?,\s*['"](.+?)['"]\)/
+    reg_readmethod = /([\n=,;:\(&\|])\s*read\(.+?,\s*['"](.+?)['"]\)/
     errorNotFound = ((required) ->
         throw Error 'not found ' + required
 

@@ -113,6 +113,6 @@
     };
     loadLoop();
   };
-})(window, document, {}, /(\n|=|,|;|:|\(|&|\|)\s*read\(.+?,\s*['"](.+?)['"]\)/, (function(required) {
+})(window, document, {}, /([\n=,;:\(&\|])\s*read\(.+?,\s*['"](.+?)['"]\)/, (function(required) {
   throw Error('not found ' + required);
 }));

@@ -23,7 +23,7 @@ raiseNoOption '-main' unless @main
 @output = OPTS[:output]
 @remove_read_path = OPTS[:remove_read_path]
 @depths = []
-@reg = /(\n|=|,|;|:|\(|&|\|)([ \t]*)read\((.+?),\s*['"](.+?)['"]\)/
+@reg = /([\n=,;:\(&\|][ \t]*)read\((.+?),\s*['"](.+?)['"]\)/
 
 @root += '/' unless @root[-1] == '/'
 
@@ -35,7 +35,7 @@ def depthRecursive (path)
     f.close
 
     while index = @reg =~ (value)
-        jspath = @root + $4 + '.js'
+        jspath = @root + $3 + '.js'
 
         depthRecursive jspath
 
@@ -59,7 +59,7 @@ def uniteJSFiles (array)
     end
 
     if @remove_read_path == '1'
-        value = value.gsub(@reg, '\1\2read(\3)')
+        value = value.gsub(@reg, '\1read(\2)')
     end
 
     unless @output
