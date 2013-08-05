@@ -1,75 +1,38 @@
 require 'optparse'
 opt = OptionParser.new
 
-OPTS = {}
+attr = {}
 
-opt.on('-r VAL', '--root=VAL') {|v| OPTS[:root] = v }
-opt.on('-m VAL','--main=VAL') {|v| OPTS[:main] = v }
-opt.on('-o VAL','--output=VAL') {|v| OPTS[:output] = v }
-opt.on('-p VAL','--remove_read_path=VAL') {|v| OPTS[:remove_read_path] = v }
+opt.on('-r VAL', '--root=VAL') {|v| attr[:root] = v }
+opt.on('-m VAL','--main=VAL') {|v| attr[:main] = v }
+opt.on('-o VAL','--output=VAL') {|v| attr[:output] = v }
+opt.on('-p VAL','--remove_read_path') {|v| attr[:remove_read_path] = true }
 
-opt.parse!(ARGV)
+opt.permute!(ARGV)
+attr[:remove_read_path] ||= false
+attr[:readed_path] = []
 
-@root = OPTS[:root]
-@main = OPTS[:main]
+def readCapture(path, attr)
+    stack = []
+    buffer = ""
 
-def raiseNoOption (name)
-    raise 'input ' + name + ' option.  sample: ruby unite.rb -root=path/to/dir -main=path/to/dir/file.js'
+    re = /([^\._a-zA-Z0-9\$]*)read\((.+?),\s*['"](.+?)['"]\)/
+
+    attr[:readed_path] << path
+    File.open(path, 'r').each_line do |line|
+        if line =~ re
+            stack += readCapture("#{attr[:root]}/#{$3}.js", attr) unless attr[:readed_path].index "#{attr[:root]}/#{$3}.js"
+        end
+        buffer += attr[:remove_read_path] ? line.gsub(re, '\1read(\2)') : line
+    end
+
+    stack << buffer
 end
 
-raiseNoOption '-root' unless @root
-raiseNoOption '-main' unless @main
+content = readCapture(attr[:main], attr).join("\n")
 
-@output = OPTS[:output]
-@remove_read_path = OPTS[:remove_read_path]
-@depths = []
-@reg = /([\n=,;:\(&\|][ \t]*)read\((.+?),\s*['"](.+?)['"]\)/
-
-@root += '/' unless @root[-1] == '/'
-
-def depthRecursive (path)
-    f = open(path)
-
-    value = "\n" + f.read
-
-    f.close
-
-    while index = @reg =~ (value)
-        jspath = @root + $3 + '.js'
-
-        depthRecursive jspath
-
-        value = value[index+$&.length..value.length]
-    end
-
-    @depths << path unless @depths.index path
-
-    @depths
+if attr.has_key? :output
+    File.open(attr[:output].to_s, 'w') { |f| f.write content}
+else
+    printf content
 end
-
-def uniteJSFiles (array)
-    value = ''
-
-    array.each do |jspath|
-        f = open(jspath)
-
-        value += "\n" + f.read
-
-        f.close
-    end
-
-    if @remove_read_path == '1'
-        value = value.gsub(@reg, '\1read(\2)')
-    end
-
-    unless @output
-        printf value
-    else
-        output_file = File.open(@output, 'w')
-        output_file.write value
-    end
-
-    value
-end
-
-uniteJSFiles depthRecursive @main
