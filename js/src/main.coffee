@@ -7,9 +7,12 @@ do (
         throw Error 'not found ' + required
 
         return
-    )
+    ),
+    time = +new Date
 ) ->
-    presenceCheck = (required) ->
+    srcpathNoCache = (srcpath) ->
+        return srcpath + '?t=' + time
+    checkPersence = (required) ->
         required = required.split('.')
         temp = win
 
@@ -20,48 +23,45 @@ do (
 
         return temp
 
-    xhrGet = (srcpath) ->
+    getFile = (srcpath, callback) ->
         res = ''
         xhr = new XMLHttpRequest
 
         xhr.onreadystatechange = ->
             if xhr.readyState == 4
                 if xhr.status == 200
-                    res = xhr.responseText
+                    res = '\n' + xhr.responseText
                 else
                     errorNotFound srcpath
 
+                callback res if callback
             return
 
-        xhr.open 'GET', srcpath + '?t=' + new Date*1, false
+        xhr.open 'GET', srcpathNoCache(srcpath), !!callback
 
         xhr.send()
 
-        return '\n' + res.replace /\r\n?/g, '\n'
+        return res
 
     xhrSyncScriptLoad = (srcpath) ->
-        res = xhrGet srcpath
-
         doc.head
             .appendChild(doc.createElement 'script')
-            .text = '//src:' + srcpath + res
+            .text = '//src:' +
+                srcpath +
+                getFile srcpath
 
         return
 
     (read = win['read'] = (required, srcpath) ->
-        cls = presenceCheck required
-
-        unless cls
+        unless cls = checkPersence required
             if srcpath && !required_obj[srcpath]
-                required_obj[srcpath] = true
-
-                srcpath += '.js'
+                required_obj[srcpath += '.js'] = true
 
                 xhrSyncScriptLoad srcpath
             else
                 errorNotFound required
 
-        unless cls = presenceCheck required
+        unless cls = checkPersence required
             errorNotFound required
 
         return cls
@@ -72,7 +72,7 @@ do (
         temp = win
 
         while i < len
-            break if !temp[keywords[i]]
+            break unless temp[keywords[i]]
 
             par = temp
             temp = temp[keywords[i]]
@@ -97,43 +97,55 @@ do (
     read['run'] = (path) ->
         path = path + '.js'
         require_ary = []
+        loaded_paths = {}
+        unitefile = ''
 
         checkReadLoop = (jspath) ->
-            filevalue = xhrGet jspath
+            require_ary.unshift jspath
 
-            while result = filevalue.match reg_readmethod
-                temp = result[1] + '.js'
+            unless required_obj[jspath]
+                required_obj[jspath] = 1
 
-                unless required_obj[temp]
-                    checkReadLoop temp
+                getFile jspath, (filevalue) ->
+                    unitefile = filevalue + unitefile
 
-                filevalue = filevalue.slice result.index + result[0].length
+                    if result = unitefile.match reg_readmethod
+                        temp = result[1] + '.js'
 
-            require_ary.push jspath
-            required_obj[jspath] = true
+                        unitefile = unitefile.slice result.index + result[0].length
 
-            return
+                        require_ary.unshift temp
 
-        checkReadLoop path
+                        return checkReadLoop temp
 
-        loadLoop = () ->
-            if src = require_ary.shift()
-                script = doc.createElement 'script'
-                loadaction = () ->
-                    script.removeEventListener 'load', loadaction
                     loadLoop()
 
                     return
 
-                script.addEventListener 'load', loadaction
+            return
 
-                script.src = src
+        loadLoop = () ->
+            if src = require_ary.shift()
+                unless loaded_paths[src]
+                    loaded_paths[src] = 1
+                    script = doc.createElement 'script'
+                    loadaction = () ->
+                        script.removeEventListener 'load', loadaction
+                        loadLoop()
 
-                doc.head.appendChild script
+                        return
+
+                    script.addEventListener 'load', loadaction
+
+                    script.src = srcpathNoCache(src)
+
+                    doc.head.appendChild script
+                else
+                    loadLoop()
 
             return
 
-        loadLoop()
+        checkReadLoop path
 
         return
 
