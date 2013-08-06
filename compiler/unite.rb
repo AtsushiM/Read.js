@@ -1,39 +1,42 @@
 require 'optparse'
-opt = OptionParser.new
 
-attr = {}
+lambda {
+    opt = OptionParser.new
 
-opt.on('-r VAL', '--root=VAL') {|v| attr[:root] = v }
-opt.on('-m VAL','--main=VAL') {|v| attr[:main] = v }
-opt.on('-o VAL','--output=VAL') {|v| attr[:output] = v }
-opt.on('-p VAL','--remove_read_path') {|v| attr[:remove_read_path] = true }
+    attr = {}
 
-opt.permute!(ARGV)
-attr[:remove_read_path] ||= false
-attr[:readed_path] = []
+    opt.on('-r VAL', '--root=VAL') {|v| attr[:root] = v }
+    opt.on('-m VAL','--main=VAL') {|v| attr[:main] = v }
+    opt.on('-o VAL','--output=VAL') {|v| attr[:output] = v }
+    opt.on('-p VAL','--remove_read_path') {|v| attr[:remove_read_path] = true }
 
-def readCapture(path, attr)
-    stack = []
-    buffer = ""
+    opt.permute!(ARGV)
+    attr[:remove_read_path] ||= false
+    attr[:readed_path] = []
 
-    re = /([^\._a-zA-Z0-9\$]*)read\((.+?),\s*['"](.+?)['"]\)/
+    def readCapture(path, attr)
+        stack = []
+        buffer = ""
 
-    attr[:readed_path] << path
-    File.open(path, 'r').each_line do |line|
-        if line =~ re
-            nextpath = "#{attr[:root]}/#{$3}.js"
-            stack += readCapture(nextpath, attr) unless attr[:readed_path].index nextpath
+        re = /([^\._a-zA-Z0-9\$]*)read\((.+?),\s*['"](.+?)['"]\)/
+
+        attr[:readed_path] << path
+        File.open(path, 'r').each_line do |line|
+            if line =~ re
+                nextpath = "#{attr[:root]}/#{$3}.js"
+                stack += readCapture(nextpath, attr) unless attr[:readed_path].index nextpath
+            end
+            buffer += attr[:remove_read_path] ? line.gsub(re, '\1read(\2)') : line
         end
-        buffer += attr[:remove_read_path] ? line.gsub(re, '\1read(\2)') : line
+
+        stack << buffer
     end
 
-    stack << buffer
-end
+    content = readCapture(attr[:main], attr).join("\n")
 
-content = readCapture(attr[:main], attr).join("\n")
-
-if attr.has_key? :output
-    File.open(attr[:output].to_s, 'w') { |f| f.write content}
-else
-    printf content
-end
+    if attr.has_key? :output
+        File.open(attr[:output].to_s, 'w') { |f| f.write content}
+    else
+        printf content
+    end
+}.call

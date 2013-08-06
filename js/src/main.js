@@ -88,7 +88,7 @@
       var filevalue, result, temp;
       filevalue = xhrGet(jspath);
       while (result = filevalue.match(reg_readmethod)) {
-        temp = result[2] + '.js';
+        temp = result[1] + '.js';
         if (!required_obj[temp]) {
           checkReadLoop(temp);
         }
@@ -113,6 +113,6 @@
     };
     loadLoop();
   };
-})(window, document, {}, /([\n=,;:\(&\|])\s*read\(.+?,\s*['"](.+?)['"]\)/, (function(required) {
+})(window, document, {}, /[=,;:&\n\(\|]\s*read\(.+?,\s*['"](.+?)['"]\)/, (function(required) {
   throw Error('not found ' + required);
 }));

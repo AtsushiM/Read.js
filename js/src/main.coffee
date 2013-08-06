@@ -2,7 +2,7 @@ do (
     win = window,
     doc = document,
     required_obj = {},
-    reg_readmethod = /([\n=,;:\(&\|])\s*read\(.+?,\s*['"](.+?)['"]\)/
+    reg_readmethod = /[=,;:&\n\(\|]\s*read\(.+?,\s*['"](.+?)['"]\)/
     errorNotFound = ((required) ->
         throw Error 'not found ' + required
 
@@ -102,7 +102,7 @@ do (
             filevalue = xhrGet jspath
 
             while result = filevalue.match reg_readmethod
-                temp = result[2] + '.js'
+                temp = result[1] + '.js'
 
                 unless required_obj[temp]
                     checkReadLoop temp
