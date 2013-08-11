@@ -1,9 +1,9 @@
-(function(win, doc, required_obj, reg_readmethod, time, read) {
+!function(win, doc, required_obj, reg_readmethod, time, ev, tag, ext, read) {
   read = win['read'] = function(required, srcpath, cls) {
     /* var cls; */
     if (!(cls = checkPersence(required))) {
       if (srcpath && !required_obj[srcpath]) {
-        required_obj[srcpath += '.js'] = true;
+        required_obj[srcpath += ext] = true;
         xhrSyncScriptLoad(srcpath);
       } else {
         errorNotFound(required);
@@ -21,12 +21,12 @@
 
     while (i < len) {
       par = temp;
-      if (temp[keywords[i]]) {
-        temp = temp[keywords[i]];
+      if (!temp[keywords[i]]) {
+        temp[keywords[i]] = {};
       }
-      else {
-        temp = temp[keywords[i]] = {};
-      }
+
+      temp = temp[keywords[i]];
+
       i++;
     }
 
@@ -45,7 +45,7 @@
         require_ary = [],
         unitefile = '';
 
-    path = path + '.js';
+    path = path + ext;
 
     checkReadLoop(path);
 
@@ -57,7 +57,7 @@
           /* var result, temp; */
           unitefile = filevalue + unitefile;
           if (result = unitefile.match(reg_readmethod)) {
-            temp = result[1] + '.js';
+            temp = result[1] + ext;
             unitefile = unitefile.slice(result.index + result[0].length);
             require_ary.unshift(temp);
             return checkReadLoop(temp);
@@ -67,12 +67,12 @@
       }
     }
     function loadLoop() {
-      var script, src, ev = 'load';
+      var script, src;
 
       if (src = require_ary.shift()) {
         if (!loaded_paths[src]) {
           loaded_paths[src] = 1;
-          script = doc.createElement('script');
+          script = doc.createElement(tag);
           script.addEventListener(ev, loadaction);
           script.src = srcpathNoCache(src);
           doc.head.appendChild(script);
@@ -89,7 +89,7 @@
   };
 
   function srcpathNoCache(srcpath) {
-    return srcpath + '?' + time;
+    return srcpath + time;
   }
   function checkPersence(required) {
     var i, temp = win;
@@ -124,9 +124,9 @@
     return res;
   }
   function xhrSyncScriptLoad(srcpath) {
-    doc.head.appendChild(doc.createElement('script')).text = '//src:' + srcpath + getFile(srcpath);
+    doc.head.appendChild(doc.createElement(tag)).text = getFile(srcpath);
   }
   function errorNotFound(required) {
     throw Error('not found ' + required);
   }
-})(window, document, {}, /[=,;:&\n\(\|]\s*read\(.+?,\s*['"](.+?)['"]\)/, +(new Date));
+}(window, document, {}, /[=,;:&\n\(\|]\s*read\(.+?,\s*['"](.+?)['"]\)/, '?' + (new Date) * 1, 'load', 'script', '.js');

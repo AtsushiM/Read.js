@@ -3,15 +3,18 @@ do (
     doc = document,
     required_obj = {},
     reg_readmethod = /[=,;:&\n\(\|]\s*read\(.+?,\s*['"](.+?)['"]\)/
-    errorNotFound = ((required) ->
+    time = '?' + new Date * 1,
+    ev = 'load',
+    tag = 'script',
+    ext = '.js'
+) ->
+    errorNotFound = (required) ->
         throw Error 'not found ' + required
 
         return
-    ),
-    time = +new Date
-) ->
+
     srcpathNoCache = (srcpath) ->
-        return srcpath + '?' + time
+        return srcpath + time
 
     checkPersence = (required) ->
         required = required.split('.')
@@ -46,17 +49,15 @@ do (
 
     xhrSyncScriptLoad = (srcpath) ->
         doc.head
-            .appendChild(doc.createElement 'script')
-            .text = '//src:' +
-                srcpath +
-                getFile srcpath
+            .appendChild(doc.createElement tag)
+            .text = getFile srcpath
 
         return
 
     (read = win['read'] = (required, srcpath) ->
         unless cls = checkPersence required
             if srcpath && !required_obj[srcpath]
-                required_obj[srcpath += '.js'] = true
+                required_obj[srcpath += ext] = true
 
                 xhrSyncScriptLoad srcpath
             else
@@ -92,7 +93,7 @@ do (
         return temp
 
     read['run'] = (path) ->
-        path = path + '.js'
+        path = path + ext
         require_ary = []
         loaded_paths = {}
         unitefile = ''
@@ -107,7 +108,7 @@ do (
                     unitefile = filevalue + unitefile
 
                     if result = unitefile.match reg_readmethod
-                        temp = result[1] + '.js'
+                        temp = result[1] + ext
 
                         unitefile = unitefile.slice result.index + result[0].length
 
@@ -125,14 +126,14 @@ do (
             if src = require_ary.shift()
                 unless loaded_paths[src]
                     loaded_paths[src] = 1
-                    script = doc.createElement 'script'
+                    script = doc.createElement tag
                     loadaction = () ->
-                        script.removeEventListener 'load', loadaction
+                        script.removeEventListener ev, loadaction
                         loadLoop()
 
                         return
 
-                    script.addEventListener 'load', loadaction
+                    script.addEventListener ev, loadaction
 
                     script.src = srcpathNoCache(src)
 
