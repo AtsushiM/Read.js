@@ -11,7 +11,8 @@ do (
     time = +new Date
 ) ->
     srcpathNoCache = (srcpath) ->
-        return srcpath + '?t=' + time
+        return srcpath + '?' + time
+
     checkPersence = (required) ->
         required = required.split('.')
         temp = win
@@ -72,16 +73,12 @@ do (
         temp = win
 
         while i < len
-            break unless temp[keywords[i]]
-
             par = temp
-            temp = temp[keywords[i]]
 
-            i++
-
-        while i < len
-            par = temp
-            temp = temp[keywords[i]] = {}
+            if temp[keywords[i]]
+                temp = temp[keywords[i]]
+            else
+                temp = temp[keywords[i]] = {}
 
             i++
 
