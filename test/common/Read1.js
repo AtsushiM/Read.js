@@ -1,6 +1,6 @@
 read('read.Read3', 'common/Read3');
 read('read.Read2', 'common/Read2');
-read('$', 'http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min');
+read('$', 'http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js');
 
 read.ns('read.Read1', function() {
     console.log('1');

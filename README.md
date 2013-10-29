@@ -60,7 +60,7 @@ pathから使用するjsファイルを解析し、ファイルの読み込み�
 ```html
 // js/main.jsからread(keyword, path)を検索しファイル読み込みを行う
 <script type="text/javascript">
-    read.run('js/main'); // .jsは省略する
+    read.run('js/main'); // .jsは省略可能
 </script>
 ```
 

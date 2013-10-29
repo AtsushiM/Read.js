@@ -16,6 +16,14 @@ do (
     srcpathNoCache = (srcpath) ->
         return srcpath + time
 
+    makeURLPath = (srcpath) ->
+        org = srcpath
+
+        if srcpath && !srcpath.match /\.[a-z0-9]+$/
+            srcpath += ext
+
+        return srcpath
+
     checkPersence = (required) ->
         required = required.split('.')
         temp = win
@@ -55,9 +63,11 @@ do (
         return
 
     (read = win['read'] = (required, srcpath) ->
+        srcpath = makeURLPath srcpath
+
         unless cls = checkPersence required
             if srcpath && !required_obj[srcpath]
-                required_obj[srcpath += ext] = true
+                required_obj[srcpath] = true
 
                 xhrSyncScriptLoad srcpath
             else
@@ -93,7 +103,8 @@ do (
         return temp
 
     read['run'] = (path) ->
-        path = path + ext
+        path = makeURLPath path
+
         require_ary = []
         loaded_paths = {}
         unitefile = ''
@@ -105,14 +116,12 @@ do (
                 required_obj[jspath] = 1
 
                 if !jspath.match /^(\/\/|http)/
-                    console.log(jspath);
                     getFile jspath, (filevalue) ->
                         unitefile = filevalue + unitefile
                         nextRead filevalue
 
                         return
                 else
-                    console.log(jspath);
                     require_ary.unshift jspath
 
                     nextRead filevalue
@@ -122,7 +131,7 @@ do (
 
         nextRead = (filevalue) ->
             if result = unitefile.match reg_readmethod
-                temp = result[1] + ext
+                temp = makeURLPath result[1]
 
                 unitefile = unitefile.slice result.index + result[0].length
 
