@@ -1,4 +1,5 @@
 require 'optparse'
+require "open-uri"
 
 lambda {
     opt = OptionParser.new
@@ -19,14 +20,34 @@ lambda {
         buffer = ""
 
         re = /([^\._a-zA-Z0-9\$]*)read\((.+?),\s*['"](.+?)['"]\)/
+        is_external = /^(\/\/|http)/
 
         attr[:readed_path] << path
-        File.open(path, 'r').each_line do |line|
+
+        readed = lambda do |line|
             if line =~ re
-                nextpath = "#{attr[:root]}/#{$3}.js"
+                nextpath = $3
+
+                if nextpath !~ /^(\/\/|http)/
+                    nextpath = "#{attr[:root]}/#{nextpath}"
+                end
+                if nextpath !~ /\.[a-z0-9]+$/
+                    nextpath += '.js'
+                end
+
                 stack += readCapture(nextpath, attr) unless attr[:readed_path].index nextpath
             end
             buffer += attr[:remove_read_path] ? line.gsub(re, '\1read(\2)') : line
+        end
+
+        if path =~ is_external
+            open(path, 'r').each_line do |line|
+                readed.call line
+            end
+        else
+            File.open(path, 'r').each_line do |line|
+                readed.call line
+            end
         end
 
         stack << buffer
