@@ -68,10 +68,11 @@ pathから使用するjsファイルを解析し、ファイルの読み込み�
 compiler/unite.rbを使用してjsファイルを結合することが可能です。
 
 ```command
-ruby unite.rb --root=path/to/dir --main=path/to/dir/file.js --output=path/to/file.js --remove_read_path=1
+ruby unite.rb --root=path/to/dir --main=path/to/dir/file.js --output=path/to/file.js --remove_read_path=1 --remove_read_path=1
 
-ruby unite.rb -r path/to/dir -m path/to/dir/file.js -o path/to/file.js -p 1
+ruby unite.rb -r path/to/dir -m path/to/dir/file.js -o path/to/file.js -p 1 -a 1
 ```
 
---outputと--remove_read_pathは省略可能です。<br />
+--outputと--remove_read_path,--remove_read_pathは省略可能です。<br />
 --remove_read_pathに1を指定した場合、read(keyword, path)をread(keyword)に置換します。
+--remove_read_allに1を指定した場合、read.jsのメソッドをすべてjavascriptネイティブに書き換えて出力します。

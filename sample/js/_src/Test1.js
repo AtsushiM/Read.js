@@ -6,5 +6,9 @@ read.ns('ns.Test1', function() {
     document.write('exe: test1.<br/ >');
 
     new Test2;
-    new ns.Test3;
+    // --remove_read_allオプションを使用する場合、エラーになる
+    /* new ns.Test3; */
+
+    var Test3 = read('ns.Test3');
+    new Test3;
 });
