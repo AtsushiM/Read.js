@@ -74,7 +74,7 @@ ruby unite.rb -r path/to/dir -m path/to/dir/file.js -o path/to/file.js -p 1 -a 1
 ```
 
 --outputと--remove_read_path,--remove_read_all,--copyright_outputは省略可能です。<br />
---remove_read_pathに1を指定した場合、read(keyword, path)をread(keyword)に置換します。
---remove_read_allに1を指定した場合、read.jsのメソッドをすべてjavascriptネイティブに書き換えて出力します。
---copyright_outputは指定されたファイルに/**/で囲まれたcopyrightを思われるコメントを抜き出して出力します。
+--remove_read_pathに1を指定した場合、read(keyword, path)をread(keyword)に置換します。<br />
+--remove_read_allに1を指定した場合、read.jsのメソッドをすべてjavascriptネイティブに書き換えて出力します。<br />
+--copyright_outputは指定されたファイルに/**/で囲まれたcopyrightを思われるコメントを抜き出して出力します。<br />
 出力されるコメントは/*!で始まるコメントか、copyright,もしくは(c)を含むコメントが対象です。
