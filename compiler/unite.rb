@@ -11,12 +11,14 @@ lambda {
     opt.on('-o VAL','--output=VAL') {|v| attr[:output] = v }
     opt.on('-p VAL','--remove_read_path') {|v| attr[:remove_read_path] = v }
     opt.on('-a VAL','--remove_read_all') {|v| attr[:remove_read_all] = v }
+    opt.on('-c VAL','--copyright_output=VAL') {|v| attr[:copyright_output] = v }
 
     opt.permute!(ARGV)
     attr[:remove_read_path] = attr[:remove_read_path] == '1' ? true : false
     attr[:remove_read_all] = attr[:remove_read_all] == '1' ? true : false
     attr[:readed_path] = []
     attr[:advance_ns] = []
+    attr[:copyrights] = []
 
     def readCapture(path, attr)
         stack = []
@@ -98,6 +100,23 @@ lambda {
         end
 
         content = "var __read_ns = [];\n\n" + content
+    end
+
+    if attr[:copyright_output]
+        content = content.gsub(/(\/\*(\/?([^\/]|[^*]\/)*)\*\/)/m) do |val|
+            v1 = $1
+            v2 = $2
+            val = v1
+
+            if v2[0] == '!' || v2 =~ /(copyright|\(c\))/
+                val = ''
+                attr[:copyrights] << v1
+            end
+
+            val
+        end
+
+        File.open(attr[:copyright_output].to_s, 'w') { |f| f.write attr[:copyrights].join("\n")}
     end
 
     if attr.has_key? :output
